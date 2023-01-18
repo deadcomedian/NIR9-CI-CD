@@ -44,7 +44,7 @@ node {
                         git checkout master
                         git add *
                         git commit -am 'Deployment patched with new docker image ${dockerTag}'
-                        git push --set-upstream origin master -key $id_rsa
+                        GIT_SSH_COMMAND='ssh -i $id_rsa' git push --set-upstream origin master
                     """
                 }
             }
