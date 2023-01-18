@@ -13,8 +13,8 @@ spec:
         app: churn-model-telecom
     spec:
       containers:
-        - name: churn-model-telecom
-          image: docker.io/deadcomedian/churn_model_telecom:1
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5000
+      - name: churn-model-telecom
+        image: deadcomedian/churn_model_telecom:202301181931_9931329556cebf580164610775652e2a623b1997
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
