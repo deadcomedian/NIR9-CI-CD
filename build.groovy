@@ -44,7 +44,7 @@ node {
                         git checkout master
                         git add *
                         git commit -am 'Deployment patched with new docker image ${dockerTag}'
-                        git push
+                        git push --set-upstream origin master
                     """
                 }
             }
