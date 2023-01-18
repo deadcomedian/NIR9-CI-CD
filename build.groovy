@@ -19,7 +19,7 @@ node {
 
     stage ("Build docker image & push") {
         def gitSha = gitData['GIT_COMMIT']
-        def dockerTag = timeNow.format("yyyyMMddHHmm")+"_" + gitSha
+        def dockerTag = new Date().format("yyyyMMddHHmm")+"_" + gitSha
         sh "cp ${WORKSPACE}/ci-cd/Dockerfile ${WORKSPACE}/churn_model_telecom/Dockerfile"
         dir("${WORKSPACE}/churn_model_telecom"){
             withCredentials([usernamePassword(credentialsId: "TUZ", passwordVariable: 'password', usernameVariable: 'username')]) {
