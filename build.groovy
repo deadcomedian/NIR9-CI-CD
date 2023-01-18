@@ -35,7 +35,7 @@ node {
             def deployment = readYaml file: "${WORKSPACE}/ci-cd/deployment.yaml"
             deployment.spec.template.spec.containers[0].image = "deadcomedian/churn_model_telecom:${dockerTag}"
             sh "rm ${WORKSPACE}/ci-cd/deployment.yaml"
-            writeYaml file: "rm ${WORKSPACE}/ci-cd/deployment.yaml", data: deployment
+            writeYaml file: "${WORKSPACE}/ci-cd/deployment.yaml", data: deployment
             dir("${WORKSPACE}/ci-cd"){
                 withCredentials([sshUserPrivateKey(credentialsId: "TUZ_ssh", keyFileVariable: 'id_rsa')]) {
                     sh """
