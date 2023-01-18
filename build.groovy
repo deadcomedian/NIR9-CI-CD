@@ -39,7 +39,7 @@ node {
             dir("${WORKSPACE}/ci-cd"){
                 withCredentials([sshUserPrivateKey(credentialsId: "TUZ_ssh", keyFileVariable: 'id_rsa')]) {
                     sh """
-                        git checkout -b master
+                        git checkout master
                         git add *
                         git commit -am 'Deployment patched with new docker image ${dockerTag}'
                         git push
