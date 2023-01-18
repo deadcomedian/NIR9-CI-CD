@@ -39,13 +39,12 @@ node {
             dir("${WORKSPACE}/ci-cd"){
                 withCredentials([sshUserPrivateKey(credentialsId: "TUZ_ssh", keyFileVariable: 'id_rsa')]) {
                     sh """
-                        echo $id_rsa >> ~./ssh/id_rsa
                         git config --global user.name "Mr.Jenkins"
                         git config --global user.email "bozheboy@yandex.ru"
                         git checkout master
                         git add *
                         git commit -am 'Deployment patched with new docker image ${dockerTag}'
-                        git push --set-upstream origin master
+                        git push --set-upstream origin master -key $id_rsa
                     """
                 }
             }
