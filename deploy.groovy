@@ -28,7 +28,6 @@ node {
 
     stage("Check readiness") {
         withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'KUBECONFIG')]) {
-            sh "export KUBEONFIG=$FILE"
             def output = sh (script: "kubectl get deployment churn-model-telecom-deployment", returnStdout: true) 
             if (output.contains("${replicasNumber}/${replicasNumber}")) {
                 currentBuild.displayName = "Deployed 🏖 ☀️ 🌴"
