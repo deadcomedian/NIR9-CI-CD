@@ -15,8 +15,8 @@ node {
         dir("${WORKSPACE}/ci-cd"){
             withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'FILE')]) {
                 sh """
-                    cat $FILE
-                    export KUBEONFIG=$FILE
+                    cat $FILE >> ${WORKSPACE}/kubeconfig.yaml
+                    export KUBEONFIG=${WORKSPACE}/kubeconfig.yaml
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
                 """
