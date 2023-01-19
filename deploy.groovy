@@ -15,7 +15,7 @@ node {
         dir("${WORKSPACE}/ci-cd"){
             withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'FILE')]) {
                 sh """
-                    kubectl config set-context $(kubectl config current-context)
+                    kubectl config set-context '$(kubectl config current-context)'
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
                 """
