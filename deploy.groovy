@@ -13,9 +13,9 @@ node {
         def deployment = readYaml file: "${WORKSPACE}/ci-cd/deployment.yaml"
         replicasNumber = deployment.spec.replicas
         dir("${WORKSPACE}/ci-cd"){
-            withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'FILE')]) {
+            withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'KUBECONFIG')]) {
+                sh "kubectl config set-context $(kubectl config current-context)"
                 sh """
-                    kubectl config set-context '$(kubectl config current-context)'
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
                 """
