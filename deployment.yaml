@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: churn-model-telecom
-        image: deadcomedian/churn_model_telecom:202301181931_9931329556cebf580164610775652e2a623b1997
+        image: deadcomedian/churn_model_telecom:202301221405_30f41d4a4984f9f523dfb662027f37a6a3c0e022
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
