@@ -112,10 +112,11 @@ node {
         fileOperations([folderCreateOperation("${WORKSPACE}/zap-scans")])
         try{
             sh """
-                docker run -d --rm --name ${modelName} -p5000:5000 ${modelImageName}
-                docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
+                docker network create zapnet
+                docker run -d --rm --name ${modelName} --net zapnet ${modelImageName}
+                docker run -dt --rm --name owasp --net zapnet owasp/zap2docker-stable /bin/bash
                 docker exec owasp mkdir /zap/wrk 
-                docker exec owasp zap-full-scan.py -t http://94.156.189.88${zapTarget} -x report.xml -I
+                docker exec owasp zap-full-scan.py -t http://${modelName}${zapTarget} -x report.xml -I
                 docker cp owasp:/zap/wrk/report.xml ${WORKSPACE}/zap-scans
 
                 ls -halt ${WORKSPACE}/zap-scans
@@ -125,6 +126,7 @@ node {
             sh """
                 docker stop ${modelName}
                 docker stop owasp
+                docker network rm zapnet
             """
         }
         
