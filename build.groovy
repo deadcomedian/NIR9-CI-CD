@@ -90,6 +90,7 @@ node {
             dependencyCheckPublisher pattern: 'dependency-check-report.xml'//, stopBuild: true
             sh "ls -halt"
             sh "cat dependency-check-report.json"
+            archiveArtifacts "dependency-check-report.html"
         }
     }
 
