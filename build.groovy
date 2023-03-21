@@ -87,7 +87,7 @@ node {
             --exclude ".git/**"
             --enableExperimental
             ''', odcInstallation: 'Dependency-Check'
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'//, stopBuild: true
+            dependencyCheckPublisher //pattern: 'dependency-check-report.xml'//, stopBuild: true
             sh "ls -halt"
             sh "cat dependency-check-report.json"
             archiveArtifacts "dependency-check-report.html"
