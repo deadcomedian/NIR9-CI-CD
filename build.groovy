@@ -109,24 +109,27 @@ node {
     }
 
     stage("OWASP ZAP Check"){
-        sh """
+        fileOperations([folderCreateOperation("${WORKSPACE}/zap-scans")])
+        try{
+            sh """
+                docker run -d --rm --name ${modelName} ${modelImageName}
+                docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
+                docker exec owasp mkdir /zap/wrk 
+                docker exec owasp zap-baseline.py -t http://${modelName}${zapTarget} -x report-baseline.xml -I
+                docker exec owasp zap-api-scan.py -t ${zapTarget} -x report-api-scan.xml -I
+                docker exec owasp zap-full-scan.py -t ${zapTarget} -x report-full-scan.xml -I
+                docker cp owasp:/zap/wrk/report-*.xml ${WORKSPACE}/zap-scans
 
-            docker run -d --rm --name ${modelName} ${modelImageName}
-
-            mkdir ${WORKSPACE}/zap-scans
-            docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
-            docker exec owasp mkdir /zap/wrk 
-            docker exec owasp zap-baseline.py -t http://${modelName}${zapTarget} -x report-baseline.xml -I
-            docker exec owasp zap-api-scan.py -t ${zapTarget} -x report-api-scan.xml -I
-            docker exec owasp zap-full-scan.py -t ${zapTarget} -x report-full-scan.xml -I
-            docker cp owasp:/zap/wrk/report-*.xml ${WORKSPACE}/zap-scans
-            docker stop owasp
-
-            docker stop ${modelName}
-
-            ls -halt ${WORKSPACE}/zap-scans
-            cat ${WORKSPACE}/zap-scans/*
-        """
+                ls -halt ${WORKSPACE}/zap-scans
+                cat ${WORKSPACE}/zap-scans/*
+            """
+        } finally {
+            sh """
+                docker stop ${modelName}
+                docker stop owasp
+            """
+        }
+        
     }
 
     stage("Push docker image"){
