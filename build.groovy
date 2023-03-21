@@ -8,7 +8,15 @@ modelDockerRepo = ""
 modelImageName = ""
 sonarProject = ""
 
-def checkQualityGatesStatusAndFailIfNotOK(String analysisId,creds){
+def getAnalysisIdByTaskId(String taskUrl){
+    //делаем запрос
+    def response = httpRequest acceptType: 'APPLICATION_JSON', authentication: "TUZ", url: taskUrl
+    def json = new JsonSlurper().parseText(response.content)
+    def analysisId = json.task.analysisId
+    return analysisId
+}
+
+def checkQualityGatesStatusAndFailIfNotOK(String analysisId){
     //собираем url для запроса на получение статуса проверки QG
     def requestUrlForQGStatus = "http://94.156.189.88:9000/api/qualitygates/project_status?analysisId=" + analysisId
     //делаем запрос
@@ -62,9 +70,9 @@ node {
         sleep 180
         
         //получаем analysisId
-        def analysisId = getAnalysisIdByTaskId(taskUrl,bitbucketCred)
+        def analysisId = getAnalysisIdByTaskId(taskUrl)
         
-        checkQualityGatesStatusAndFailIfNotOK(analysisId,bitbucketCred)
+        checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
 
     stage ("Build docker image & push") {
