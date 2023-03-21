@@ -116,7 +116,7 @@ node {
                 docker run -d --rm --name ${modelName} --net zapnet ${modelImageName}
                 docker run -dt --rm --name owasp --net zapnet owasp/zap2docker-stable /bin/bash
                 docker exec owasp mkdir /zap/wrk 
-                docker exec owasp zap-full-scan.py -t http://${modelName}${zapTarget} -x report.html -I
+                docker exec owasp zap-full-scan.py -t http://${modelName}${zapTarget} -r report.html -I
                 docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/zap-scans
 
                 ls -halt ${WORKSPACE}/zap-scans
