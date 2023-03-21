@@ -7,6 +7,7 @@ modelGitRepo = ""
 modelDockerRepo = ""
 modelImageName = ""
 sonarProject = ""
+zapTarget = ""
 
 def getAnalysisIdByTaskId(String taskUrl){
     //делаем запрос
@@ -43,6 +44,7 @@ node {
         modelGitRepo = modelConfig.git_repo
         modelDockerRepo = modelConfig.docker_repo
         sonarProject = modelConfig.sonar_project
+        zapTarget = modelConfig.endpoint
     }
 
     stage ("Clone model repo"){
@@ -77,6 +79,7 @@ node {
     }
     */
 
+    /*
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 
@@ -87,47 +90,72 @@ node {
             --exclude ".git/**"
             --enableExperimental
             ''', odcInstallation: 'Dependency-Check'
-            dependencyCheckPublisher pattern: 'dependency-check-report.*'//, stopBuild: true
+            dependencyCheckPublisher pattern: 'dependency-check-report.*', stopBuild: true
             sh "ls -halt"
             sh "cat dependency-check-report.json"
             archiveArtifacts "dependency-check-report.html"
         }
     }
+    */
 
     stage ("Build docker image & push") {
         def gitSha = gitData['GIT_COMMIT']
         def dockerTag = new Date().format("yyyyMMddHHmm")+"_" + gitSha
         sh "cp ${WORKSPACE}/ci-cd/Dockerfile ${WORKSPACE}/${modelName}/Dockerfile"
         dir("${WORKSPACE}/${modelName}"){
-            withCredentials([usernamePassword(credentialsId: "TUZ", passwordVariable: 'password', usernameVariable: 'username')]) {
-                modelImageName = "${modelDockerRepo}:${dockerTag}"
-                 sh """
-                    docker logout && docker login -u '${username}' -p '${password}'
-                    docker build --tag ${modelImageName} .
-                    docker push ${modelImageName}
+            modelImageName = "${modelDockerRepo}:${dockerTag}"
+            sh "docker build --tag ${modelImageName} ."
+        }
+    }
+
+    stage("OWASP ZAP Check"){
+        sh """
+
+            docker run -d --rm --name ${modelName} ${modelImageName}
+
+            mkdir ${WORKSPACE}/zap-scans
+            docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
+            docker exec owasp mkdir /zap/wrk 
+            docker exec owasp zap-baseline.py -t ${zapTarget} -x report-baseline.xml -I
+            docker exec owasp zap-api-scan.py -t ${zapTarget} -x report-api-scan.xml -I
+            docker exec owasp zap-full-scan.py -t ${zapTarget} -x report-full-scan.xml -I
+            docker cp owasp:/zap/wrk/report-*.xml ${WORKSPACE}/zap-scans
+            docker stop owasp
+
+            docker stop ${modelName}
+
+            ls -halt ${WORKSPACE}/zap-scans
+            cat ${WORKSPACE}/zap-scans/*
+        """
+    }
+
+    stage("Push docker image"){
+        withCredentials([usernamePassword(credentialsId: "TUZ", passwordVariable: 'password', usernameVariable: 'username')]) {
+            sh """
+                docker logout && docker login -u '${username}' -p '${password}'
+                docker push ${modelImageName}
+                docker rmi ${modelImageName}
+            """
+        } 
+    }
+
+    stage("Edit model_config/${modelName}.yml with new image"){
+        modelConfig.model_image_name = modelImageName
+        sh "rm ${WORKSPACE}/ci-cd/model_configs/${modelName}.yml"
+        writeYaml file: "${WORKSPACE}/ci-cd/model_configs/${modelName}.yml", data: modelConfig
+        dir("${WORKSPACE}/ci-cd"){
+            withCredentials([sshUserPrivateKey(credentialsId: "TUZ_ssh", keyFileVariable: 'id_rsa')]) {
+                sh """
+                    git config --global user.name "Mr.Jenkins"
+                    git config --global user.email "bozheboy@yandex.ru"
+                    git checkout master
+                    git add *
+                    git commit -am '${modelName} config pathced with new image name ${modelImageName}'
+                    GIT_SSH_COMMAND='ssh -i $id_rsa' git push --set-upstream origin master
                 """
             }
         }
-
-        stage("Edit model_config/${modelName}.yml with new image"){
-            modelConfig.model_image_name = modelImageName
-            sh "rm ${WORKSPACE}/ci-cd/model_configs/${modelName}.yml"
-            writeYaml file: "${WORKSPACE}/ci-cd/model_configs/${modelName}.yml", data: modelConfig
-            dir("${WORKSPACE}/ci-cd"){
-                withCredentials([sshUserPrivateKey(credentialsId: "TUZ_ssh", keyFileVariable: 'id_rsa')]) {
-                    sh """
-                        git config --global user.name "Mr.Jenkins"
-                        git config --global user.email "bozheboy@yandex.ru"
-                        git checkout master
-                        git add *
-                        git commit -am '${modelName} config pathced with new image name ${modelImageName}'
-                        GIT_SSH_COMMAND='ssh -i $id_rsa' git push --set-upstream origin master
-                    """
-                }
-            }
-        }
-
-        currentBuild.description = "Название образа: ${modelImageName}"
     }
+    currentBuild.description = "Название образа: ${modelImageName}"
     cleanWs()
 }
