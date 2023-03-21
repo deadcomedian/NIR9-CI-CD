@@ -79,7 +79,14 @@ node {
 
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
-            dependencyCheck additionalArguments: '--out . --scan ./*.py --format ALL --prettyPrint', odcInstallation: 'Dependency-Check'
+            dependencyCheck additionalArguments: 
+            '''--out "." 
+            --scan "." 
+            --format "ALL" 
+            --prettyPrint 
+            --exclude ".git/**"
+            --enableExperimental
+            ''', odcInstallation: 'Dependency-Check'
             dependencyCheckPublisher pattern: 'dependency-check-report.xml'//, stopBuild: true
             sh "ls -halt"
             sh "cat dependency-check-report.json"
@@ -121,4 +128,5 @@ node {
 
         currentBuild.description = "Название образа: ${modelImageName}"
     }
+    cleanWs()
 }
