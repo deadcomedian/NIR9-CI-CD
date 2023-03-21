@@ -7,8 +7,24 @@ modelDockerRepo = ""
 modelImageName = ""
 sonarProject = ""
 
+def checkQualityGatesStatusAndFailIfNotOK(String analysisId,creds){
+    //собираем url для запроса на получение статуса проверки QG
+    def requestUrlForQGStatus = "http://94.156.189.88:9000/api/qualitygates/project_status?analysisId=" + analysisId
+    //делаем запрос
+    def response = httpRequest acceptType: 'APPLICATION_JSON', authentication: "TUZ", url: requestUrlForQGStatus
+    def json = new JsonSlurper().parseText(response.content)
+    def qgStatus = json.projectStatus.status
+    //проверяем статус
+    if (!qgStatus.equals("OK")){
+        //если не OK, то фейлим
+        currentBuild.result = 'FAILED'
+        CI_FLAG = 'err'
+        error("Код не прошёл проверку")
+    }
+}
 
 node {
+
     stage ("Clone CI/CD repo and configure job"){
         fileOperations([folderCreateOperation("${WORKSPACE}/ci-cd")])
         dir("${WORKSPACE}/ci-cd"){
@@ -29,11 +45,25 @@ node {
 
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
+        def shOutput = ""
         dir("${WORKSPACE}/${modelName}"){
             withSonarQubeEnv(credentialsId: "sonarToken", installationName: 'SonarQube') {
                 sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${sonarProject}"
             }
+            shOutput= sh(script: "cat .scannerwork/report-task.txt", returnStdout: true)
         }
+        //вырезаем из файла значение taskId
+        shOutput = shOutput.split("ceTaskId=")[1]
+        //def taskId = shOutput.split("ceTaskUrl=")[0]
+
+        def taskUrl = shOutput.split("ceTaskUrl=")[1]
+
+        sleep 180
+        
+        //получаем analysisId
+        def analysisId = getAnalysisIdByTaskId(taskUrl,bitbucketCred)
+        
+        checkQualityGatesStatusAndFailIfNotOK(analysisId,bitbucketCred)
     }
 
     stage ("Build docker image & push") {
