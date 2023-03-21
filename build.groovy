@@ -51,7 +51,7 @@ node {
             }
         }
 
-        stage("Edit model_config/{modelName}.yml with new image"){
+        stage("Edit model_config/${modelName}.yml with new image"){
             modelConfig.model_image_name = modelImageName
             sh "rm ${WORKSPACE}/ci-cd/model_configs/${modelName}.yml"
             writeYaml file: "${WORKSPACE}/ci-cd/model_configs/${modelName}.yml", data: modelConfig
