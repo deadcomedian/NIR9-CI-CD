@@ -116,7 +116,7 @@ node {
             mkdir ${WORKSPACE}/zap-scans
             docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
             docker exec owasp mkdir /zap/wrk 
-            docker exec owasp zap-baseline.py -t ${zapTarget} -x report-baseline.xml -I
+            docker exec owasp zap-baseline.py -t http://${modelName}${zapTarget} -x report-baseline.xml -I
             docker exec owasp zap-api-scan.py -t ${zapTarget} -x report-api-scan.xml -I
             docker exec owasp zap-full-scan.py -t ${zapTarget} -x report-full-scan.xml -I
             docker cp owasp:/zap/wrk/report-*.xml ${WORKSPACE}/zap-scans
