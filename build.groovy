@@ -94,7 +94,7 @@ node {
         }
     }
 
-    stage ("Build docker image & push") {
+    stage ("Build docker image") {
         def gitSha = gitData['GIT_COMMIT']
         def dockerTag = new Date().format("yyyyMMddHHmm")+"_" + gitSha
         sh "cp ${WORKSPACE}/ci-cd/Dockerfile ${WORKSPACE}/${modelName}/Dockerfile"
