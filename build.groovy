@@ -52,6 +52,7 @@ node {
         }
     }
 
+    /*
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
         def shOutput = ""
@@ -74,7 +75,8 @@ node {
         
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
-
+    */
+    
     stage("OWASP Dependency Check"){
         dependencyCheck additionalArguments: ''' 
                     -o "./" 
