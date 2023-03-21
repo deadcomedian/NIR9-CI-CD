@@ -54,7 +54,6 @@ node {
         }
     }
 
-    /*
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
         def shOutput = ""
@@ -77,9 +76,7 @@ node {
         
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
-    */
 
-    /*
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 
@@ -96,7 +93,6 @@ node {
             archiveArtifacts "dependency-check-report.html"
         }
     }
-    */
 
     stage ("Build docker image & push") {
         def gitSha = gitData['GIT_COMMIT']
