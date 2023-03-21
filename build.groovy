@@ -80,17 +80,17 @@ node {
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck 
-            additionalArguments: 
-                ''' 
-                    -o "./" 
-                    -s "./"
-                    -f "ALL" 
-                    --prettyPrint
-                ''', 
-            odcInstallation: 'Dependency-Check'
-        dependencyCheckPublisher 
-            pattern: 'dependency-check-report.xml',
-//            stopBuild: true
+                additionalArguments: 
+                    ''' 
+                        -o "./" 
+                        -s "./"
+                        -f "ALL" 
+                        --prettyPrint
+                    ''', 
+                odcInstallation: 'Dependency-Check'
+            dependencyCheckPublisher 
+                pattern: 'dependency-check-report.xml',
+//                stopBuild: true
         }
     }
 
