@@ -115,10 +115,8 @@ node {
                 docker run -d --rm --name ${modelName} -p5000:5000 ${modelImageName}
                 docker run -dt --rm --name owasp owasp/zap2docker-stable /bin/bash
                 docker exec owasp mkdir /zap/wrk 
-                docker exec owasp zap-baseline.py -t http://94.156.189.88${zapTarget} -x report-baseline.xml -I
-                docker exec owasp zap-api-scan.py -t ${zapTarget} -x report-api-scan.xml -I
-                docker exec owasp zap-full-scan.py -t ${zapTarget} -x report-full-scan.xml -I
-                docker cp owasp:/zap/wrk/report-*.xml ${WORKSPACE}/zap-scans
+                docker exec owasp zap-full-scan.py -t http://94.156.189.88${zapTarget} -x report.xml -I
+                docker cp owasp:/zap/wrk/report.xml ${WORKSPACE}/zap-scans
 
                 ls -halt ${WORKSPACE}/zap-scans
                 cat ${WORKSPACE}/zap-scans/*
