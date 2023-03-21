@@ -86,11 +86,12 @@ node {
                         -s "./"
                         -f "ALL" 
                         --prettyPrint
-                    ''', 
+                    '''
+                , 
                 odcInstallation: 'Dependency-Check'
             dependencyCheckPublisher 
-                pattern: 'dependency-check-report.xml',
-//                stopBuild: true
+                pattern: 'dependency-check-report.xml'
+//                ,stopBuild: true
         }
     }
 
