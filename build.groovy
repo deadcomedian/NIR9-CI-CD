@@ -78,13 +78,20 @@ node {
     */
 
     stage("OWASP Dependency Check"){
-        dependencyCheck additionalArguments: ''' 
+        dir("${WORKSPACE}/${modelName}"){
+            dependencyCheck 
+            additionalArguments: 
+                ''' 
                     -o "./" 
                     -s "./"
                     -f "ALL" 
-                    --prettyPrint''', odcInstallation: 'Dependency-Check'
-
-        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                    --prettyPrint
+                ''', 
+            odcInstallation: 'Dependency-Check'
+        dependencyCheckPublisher 
+            pattern: 'dependency-check-report.xml',
+//            stopBuild: true
+        }
     }
 
     stage ("Build docker image & push") {
