@@ -28,7 +28,7 @@ node {
     }
 
     stage("SonarQube check"){
-        def scannerHome = tool 'SonarScanner'
+        def scannerHome = tool 'SonarQube'
         dir("${WORKSPACE}/${modelName}"){
             withSonarQubeEnv(credentialsId: sonarToken, installationName: 'SonarQube') {
                 sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${sonarProject}"
