@@ -1,3 +1,4 @@
 git_repo: git@github.com:deadcomedian/NIR9-churn-model-telecom.git
 docker_repo: deadcomedian/churn_model_telecom
+modelConfig.sonar_project: churn_model_telecom
 model_image_name: 

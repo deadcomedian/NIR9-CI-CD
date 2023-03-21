@@ -5,6 +5,7 @@ modelConfig = [:]
 modelGitRepo = ""
 modelDockerRepo = ""
 modelImageName = ""
+sonarProject = ""
 
 
 node {
@@ -16,12 +17,22 @@ node {
         modelConfig = readYaml file: "${WORKSPACE}/ci-cd/model_configs/${modelName}.yml"
         modelGitRepo = modelConfig.git_repo
         modelDockerRepo = modelConfig.docker_repo
+        sonarProject = modelConfig.sonar_project
     }
 
     stage ("Clone model repo"){
         fileOperations([folderCreateOperation("${WORKSPACE}/${modelName}")])
         dir("${WORKSPACE}/${modelName}"){
             gitData = git changelog: false, poll: false, credentialsId: 'TUZ_ssh', url: modelGitRepo, branch: "master"
+        }
+    }
+
+    stage("SonarQube check"){
+        def scannerHome = tool 'SonarScanner'
+        dir("${WORKSPACE}/${modelName}"){
+            withSonarQubeEnv(credentialsId: sonarToken, installationName: 'SonarQube') {
+                sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${sonarProject}"
+            }
         }
     }
 
