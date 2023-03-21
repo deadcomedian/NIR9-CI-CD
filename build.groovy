@@ -76,13 +76,13 @@ node {
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
     */
-    
+
     stage("OWASP Dependency Check"){
         dependencyCheck additionalArguments: ''' 
                     -o "./" 
                     -s "./"
                     -f "ALL" 
-                    --prettyPrint''', odcInstallation: 'Dependency Check'
+                    --prettyPrint''', odcInstallation: 'Dependency-Check'
 
         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
     }
