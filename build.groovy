@@ -75,6 +75,16 @@ node {
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
 
+    stage("OWASP Dependency Check"){
+        dependencyCheck additionalArguments: ''' 
+                    -o "./" 
+                    -s "./"
+                    -f "ALL" 
+                    --prettyPrint''', odcInstallation: 'Dependency Check'
+
+        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+    }
+
     stage ("Build docker image & push") {
         def gitSha = gitData['GIT_COMMIT']
         def dockerTag = new Date().format("yyyyMMddHHmm")+"_" + gitSha
