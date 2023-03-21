@@ -122,7 +122,7 @@ node {
                 ls -halt ${WORKSPACE}/zap-scans
                 cat ${WORKSPACE}/zap-scans/*
             """
-            archiveArtifacts "${WORKSPACE}/zap-scans/report.html"
+            archiveArtifacts "zap-scans/report.html"
         } finally {
             sh """
                 docker stop ${modelName}
