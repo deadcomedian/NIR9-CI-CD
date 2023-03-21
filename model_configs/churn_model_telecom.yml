@@ -1,0 +1,3 @@
+git_repo: git@github.com:deadcomedian/NIR9-churn-model-telecom.git
+docker_repo: deadcomedian/churn_model_telecom
+model_image_name: 
