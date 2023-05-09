@@ -3,6 +3,17 @@ import groovy.yaml.*
 replicasNumber = 0
 modelImageName = ""
 
+properties([
+  parameters([
+    string(name: 'modelName', description: 'Model name')
+  ]),
+  pipelineTriggers([
+    parameterizedCron('''
+        */2 * * * * %modelName=churn_model_
+    ''')
+  ])
+])
+
 node {
     stage ("Clone CI/CD repo and configure job") {
         fileOperations([folderCreateOperation("${WORKSPACE}/ci-cd")])
