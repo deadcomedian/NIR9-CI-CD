@@ -116,7 +116,6 @@ node {
                 docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/zap-scans
 
                 ls -halt ${WORKSPACE}/zap-scans
-                cat ${WORKSPACE}/zap-scans/*
             """
             archiveArtifacts "zap-scans/report.html"
         } finally {
