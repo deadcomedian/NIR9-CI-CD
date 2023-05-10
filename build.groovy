@@ -33,7 +33,7 @@ def checkQualityGatesStatusAndFailIfNotOK(String analysisId){
     }
 }
 
-def getHighLevelVulnerabilitiesCount(pathToZAPReport){
+def getZAPHighLevelVulnerabilitiesCount(pathToZAPReport){
     def report = readFile file: pathToZAPReport
     def parts = report.split("\n")
     def highLevelVulnurabilitiesCount
@@ -47,6 +47,13 @@ def getHighLevelVulnerabilitiesCount(pathToZAPReport){
         break
     }
     return highLevelVulnurabilitiesCount
+}
+
+def getODCVulnerabilitiesCount(pathToODCReport){
+    def report = readFile file: pathToODCReport
+    def parts = str.split("Vulnerabilities Found</i>:&nbsp;")
+    vulnerabilitiesCount = parts[1].split("</li><li><i>Vulnerabilities Suppressed")[0].toInteger()
+    return vulnerabilitiesCount
 }
 
 node {
@@ -107,6 +114,11 @@ node {
             sh "ls -halt"
             sh "cat dependency-check-report.json"
             archiveArtifacts "dependency-check-report.html"
+            if (getODCVulnerabilitiesCount("dependency-check-report.html") > 0){
+                currentBuild.result = 'FAILED'
+                CI_FLAG = 'err'
+                error("Код не прошёл проверку ODC")
+            }
         }
     }
 
