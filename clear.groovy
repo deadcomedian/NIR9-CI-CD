@@ -4,7 +4,7 @@ properties([
   ]),
   pipelineTriggers([
     parameterizedCron('''
-        */2 * * * * %modelName=churn_model_
+        0 13 * * * %modelName=churn_model_
     ''')
   ])
 ])
