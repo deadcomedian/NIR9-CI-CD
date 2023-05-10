@@ -9,6 +9,8 @@ modelImageName = ""
 sonarProject = ""
 zapTarget = ""
 
+println(merge_commit_sha)
+
 def getAnalysisIdByTaskId(String taskUrl){
     //делаем запрос
     def response = httpRequest acceptType: 'APPLICATION_JSON', authentication: "TUZ", url: taskUrl
