@@ -29,8 +29,24 @@ def checkQualityGatesStatusAndFailIfNotOK(String analysisId){
         //если не OK, то фейлим
         currentBuild.result = 'FAILED'
         CI_FLAG = 'err'
-        error("Код не прошёл проверку")
+        error("Код не прошёл проверку SonarQube")
     }
+}
+
+def getHighLevelVulnerabilitiesCount(pathToZAPReport){
+    def report = readFile file: pathToZAPReport
+    def parts = report.split("\n")
+    def highLevelVulnurabilitiesCount
+    for(int i = 0; i<parts.size() ; i++){
+        parts[i] = parts[i].trim()
+        if(parts[i]!='<td class="risk-3">'){
+            continue;
+        }
+        def hlvString=parts[i+4]
+        highLevelVulnurabilitiesCount = hlvString.replaceAll("<div>", "").replaceAll("</div>", "").toInteger()
+        break
+    }
+    return highLevelVulnurabilitiesCount
 }
 
 node {
@@ -125,7 +141,11 @@ node {
                 docker network rm zapnet
             """
         }
-        
+        if (getHighLevelVulnerabilitiesCount("zap-scans/report.html")>0) {
+            currentBuild.result = 'FAILED'
+            CI_FLAG = 'err'
+            error("Код не прошёл проверку ZAP")
+        }
     }
 
     stage("Push docker image"){
