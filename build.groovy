@@ -1,5 +1,10 @@
 import groovy.yaml.*
 import groovy.json.*
+    
+if (merge_commit_sha == "null"){
+    currentBuild.result = 'ABORTED'
+}
+    
 gitData = ""
 
 modelConfig = [:]
@@ -8,8 +13,6 @@ modelDockerRepo = ""
 modelImageName = ""
 sonarProject = ""
 zapTarget = ""
-
-println(merge_commit_sha)
 
 def getAnalysisIdByTaskId(String taskUrl){
     //делаем запрос
