@@ -9,7 +9,7 @@ properties([
   ]),
   pipelineTriggers([
     parameterizedCron('''
-        */2 * * * * %modelName=churn_model_
+        0 11 * * * %modelName=churn_model_
     ''')
   ])
 ])
