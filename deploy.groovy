@@ -65,7 +65,7 @@ node {
 
     stage("Check readiness") {
         withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'KUBECONFIG')]) {
-            def output = sh (script: "kubectl get deployment ${modelName}-deployment", returnStdout: true) 
+            def output = sh (script: "kubectl get deployment ${modelName.replaceAll("_", "-")}-deployment", returnStdout: true) 
             if (output.contains("${replicasNumber}/${replicasNumber}")) {
                 currentBuild.displayName = "Deployed 🏖 ☀️ 🌴"
                 currentBuild.result = "SUCCESS"
