@@ -26,7 +26,7 @@ node {
 
     stage("Edit manifests"){
         def deployment = readYaml file: "${WORKSPACE}/ci-cd/deployment.yaml"
-        deployment.metadata.name = "${modelName}-deployment"
+        deployment.metadata.name = "${modelName.replaceAll("_", "-")}-deployment"
         deployment.spec.selector.matchLabels.app = modelName
         deployment.spec.template.metadata.labels.app = modelName
         deployment.spec.template.spec.containers[0].image = modelImageName
