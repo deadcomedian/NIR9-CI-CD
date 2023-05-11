@@ -42,7 +42,7 @@ node {
 
         def ingress = readYaml file: "${WORKSPACE}/ci-cd/ingress.yaml"
         ingress.metadata.name = "${modelName.replaceAll("_", "-")}-ingress"
-        ingress.spec.rules[0].http.paths[0].backend.service.name = "${modelName}-ingress"
+        ingress.spec.rules[0].http.paths[0].backend.service.name = "${modelNameodelName.replaceAll("_", "-")}-ingress"
         sh "rm ${WORKSPACE}/ci-cd/ingress.yaml"
         writeYaml file: "${WORKSPACE}/ci-cd/ingress.yaml", data: ingress
     }
