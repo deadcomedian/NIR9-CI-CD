@@ -32,12 +32,14 @@ node {
         deployment.spec.template.spec.containers[0].image = modelImageName
         replicasNumber = deployment.spec.replicas
         sh "rm ${WORKSPACE}/ci-cd/deployment.yaml"
-        writeYaml file: "${WORKSPACE}/ci-cd/deployment.yml", data: deployment
+        writeYaml file: "${WORKSPACE}/ci-cd/deployment.yaml", data: deployment
+
         def service = readYaml file: "${WORKSPACE}/ci-cd/service.yaml"
         service.metadata.name = "${modelName}-service"
         service.spec.selector.app = modelName
         sh "rm ${WORKSPACE}/ci-cd/service.yaml"
         writeYaml file: "${WORKSPACE}/ci-cd/service.yaml", data: service
+
         def ingress = readYaml file: "${WORKSPACE}/ci-cd/ingress.yaml"
         ingress.metadata.name = "${modelName}-ingress"
         ingress.spec.rules[0].http.paths[0].backend.service.name = "${modelName}-ingress"
