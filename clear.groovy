@@ -13,9 +13,9 @@ node {
     stage ("Clear cluster") {
         withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'KUBECONFIG')]) {
             sh """
-                kubectl delete deployment ${modelName}-deployment
-                kubectl delete service ${modelName}-service
-                kubectl delete ingress ${modelName}-ingress
+                kubectl delete deployment ${modelName.replaceAll("_", "-")}-deployment
+                kubectl delete service ${modelName.replaceAll("_", "-")}-service
+                kubectl delete ingress ${modelName.replaceAll("_", "-")}-ingress
             """
         }   
     }
