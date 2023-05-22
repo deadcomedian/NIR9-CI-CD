@@ -163,7 +163,7 @@ node {
                 docker network rm zapnet
             """
         }
-        if (getHighLevelVulnerabilitiesCount("zap-scans/report.html")>0) {
+        if (getZAPHighLevelVulnerabilitiesCount("zap-scans/report.html")>0) {
             currentBuild.result = 'FAILED'
             CI_FLAG = 'err'
             error("Код не прошёл проверку ZAP")
