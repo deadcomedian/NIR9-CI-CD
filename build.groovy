@@ -198,6 +198,6 @@ node {
         }
     }
     currentBuild.description = "Название образа: ${modelImageName}"
-    currentBuild.displayName = "Собрали ${modelImageName}"
+    currentBuild.displayName = "Собрали ${modelName}"
     cleanWs()
 }
