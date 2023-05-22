@@ -1,0 +1,5 @@
+git_repo: git@github.com:deadcomedian/churn-model-test.git
+docker_repo: deadcomedian/churn_model_test
+sonar_project: churn_model_test
+endpoint: :5000/analyze
+model_image_name: 
