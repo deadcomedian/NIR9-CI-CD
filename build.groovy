@@ -18,6 +18,7 @@ modelDockerRepo = ""
 modelImageName = ""
 sonarProject = ""
 zapTarget = ""
+analysisId = ""
 
 def getAnalysisIdByTaskId(String taskUrl){
     //делаем запрос
@@ -38,7 +39,6 @@ def checkQualityGatesStatusAndFailIfNotOK(String analysisId){
     if (!qgStatus.equals("OK")){
         //если не OK, то фейлим
         currentBuild.result = 'FAILED'
-        CI_FLAG = 'err'
         error("Код не прошёл проверку SonarQube")
     }
 }
@@ -103,9 +103,8 @@ node {
 
         sleep 180
         
-        def analysisId = getAnalysisIdByTaskId(taskUrl)
+        analysisId = getAnalysisIdByTaskId(taskUrl)
         
-        checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
     
     stage("OWASP Dependency Check"){
@@ -122,11 +121,6 @@ node {
             sh "ls -halt"
             sh "cat dependency-check-report.json"
             archiveArtifacts "dependency-check-report.html"
-            if (getODCVulnerabilitiesCount("dependency-check-report.html") > 0){
-                currentBuild.result = 'FAILED'
-                CI_FLAG = 'err'
-                error("Код не прошёл проверку ODC")
-            }
         }
     }
 
@@ -161,9 +155,20 @@ node {
                 docker network rm zapnet
             """
         }
-        if (getZAPHighLevelVulnerabilitiesCount("zap-scans/report.html")>0) {
+        
+    }
+
+    stage("Process analysis results"){
+
+        checkQualityGatesStatusAndFailIfNotOK(analysisId)
+
+        if (getODCVulnerabilitiesCount("${WORKSPACE}/${modelName}/dependency-check-report.html") > 0){
             currentBuild.result = 'FAILED'
-            CI_FLAG = 'err'
+            error("Код не прошёл проверку ODC")
+        }
+
+        if (getZAPHighLevelVulnerabilitiesCount("${WORKSPACE}/zap-scans/report.html")>0) {
+            currentBuild.result = 'FAILED'
             error("Код не прошёл проверку ZAP")
         }
     }
