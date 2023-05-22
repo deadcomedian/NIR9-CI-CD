@@ -86,7 +86,7 @@ node {
             gitData = git changelog: false, poll: false, credentialsId: 'TUZ_ssh', url: modelGitRepo, branch: "master"
         }
     }
-    /*
+    
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
         def shOutput = ""
@@ -96,20 +96,18 @@ node {
             }
             shOutput= sh(script: "cat .scannerwork/report-task.txt", returnStdout: true)
         }
-        //вырезаем из файла значение taskId
-        shOutput = shOutput.split("ceTaskId=")[1]
-        //def taskId = shOutput.split("ceTaskUrl=")[0]
 
+        shOutput = shOutput.split("ceTaskId=")[1]
+        
         def taskUrl = shOutput.split("ceTaskUrl=")[1]
 
         sleep 180
         
-        //получаем analysisId
         def analysisId = getAnalysisIdByTaskId(taskUrl)
         
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
-    */
+    
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 

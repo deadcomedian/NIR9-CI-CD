@@ -5,6 +5,7 @@ properties([
   pipelineTriggers([
     parameterizedCron('''
         0 13 * * * %modelName=churn_model_telecom
+        0 14 * * * %modelName=churn_model_test
     ''')
   ])
 ])
