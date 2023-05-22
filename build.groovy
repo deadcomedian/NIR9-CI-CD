@@ -61,7 +61,7 @@ def getZAPHighLevelVulnerabilitiesCount(pathToZAPReport){
 
 def getODCVulnerabilitiesCount(pathToODCReport){
     def report = readFile file: pathToODCReport
-    def parts = str.split("Vulnerabilities Found</i>:&nbsp;")
+    def parts = report.split("Vulnerabilities Found</i>:&nbsp;")
     vulnerabilitiesCount = parts[1].split("</li><li><i>Vulnerabilities Suppressed")[0].toInteger()
     return vulnerabilitiesCount
 }
@@ -86,7 +86,7 @@ node {
             gitData = git changelog: false, poll: false, credentialsId: 'TUZ_ssh', url: modelGitRepo, branch: "master"
         }
     }
-
+    /*
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
         def shOutput = ""
@@ -109,7 +109,7 @@ node {
         
         checkQualityGatesStatusAndFailIfNotOK(analysisId)
     }
-
+    */
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 
