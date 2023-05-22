@@ -2,4 +2,4 @@ git_repo: git@github.com:deadcomedian/churn-model-test.git
 docker_repo: deadcomedian/churn_model_test
 sonar_project: churn_model_test
 endpoint: :5000/analyze
-model_image_name: 
+model_image_name: deadcomedian/churn_model_test:202305221121_4b0e40d0dd29db985e0c7649ee8ec2ef0aaf0b08
