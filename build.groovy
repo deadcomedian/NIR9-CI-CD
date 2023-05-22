@@ -1,9 +1,14 @@
 import groovy.yaml.*
 import groovy.json.*
     
-if (merge_commit_sha == "null"){
-    currentBuild.result = 'ABORTED'
+try{
+    if (merge_commit_sha == "null"){
+        currentBuild.result = 'ABORTED'
+    }
+} catch (Exception e){
+    println("STRAIGHT JENKINS BUILD NO SCM EVENTS")
 }
+
     
 gitData = ""
 
