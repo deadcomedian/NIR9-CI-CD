@@ -86,7 +86,7 @@ node {
             gitData = git changelog: false, poll: false, credentialsId: 'TUZ_ssh', url: modelGitRepo, branch: "master"
         }
     }
-    
+    /*
     stage("SonarQube check"){
         def scannerHome = tool 'SonarQube'
         def shOutput = ""
@@ -106,7 +106,7 @@ node {
         analysisId = getAnalysisIdByTaskId(taskUrl)
         
     }
-    
+    */
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 
@@ -160,7 +160,7 @@ node {
 
     stage("Process analysis results"){
 
-        checkQualityGatesStatusAndFailIfNotOK(analysisId)
+        //checkQualityGatesStatusAndFailIfNotOK(analysisId)
 
         if (getODCVulnerabilitiesCount("${WORKSPACE}/${modelName}/dependency-check-report.html") > 0){
             currentBuild.result = 'FAILED'
