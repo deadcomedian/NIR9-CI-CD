@@ -163,6 +163,10 @@ node {
         
     }
 
+    stage("OWASP ZAP Check"){
+        sleep 240 + Math.abs(new Random().nextInt() % [60]) + 1
+    }
+
     stage("Process analysis results"){
 
         //checkQualityGatesStatusAndFailIfNotOK(analysisId)
