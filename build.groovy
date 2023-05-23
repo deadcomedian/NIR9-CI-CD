@@ -170,6 +170,8 @@ node {
     }
 
     stage("Process analysis results"){
+        currentBuild.result = 'FAILED'
+        error("Код не прошёл проверку ODC")
 
         //checkQualityGatesStatusAndFailIfNotOK(analysisId)
 
