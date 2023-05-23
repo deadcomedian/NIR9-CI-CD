@@ -68,10 +68,10 @@ node {
         withCredentials([file(credentialsId: 'KUBECONFIG', variable: 'KUBECONFIG')]) {
             def output = sh (script: "kubectl get deployment ${modelName.replaceAll("_", "-")}-deployment", returnStdout: true) 
             if (output.contains("${replicasNumber}/${replicasNumber}")) {
-                currentBuild.displayName = "Deployed 🏖 ☀️ 🌴"
+                currentBuild.displayName = "${modelName} Deployed 🏖 ☀️ 🌴"
                 currentBuild.result = "SUCCESS"
             } else {
-                currentBuild.displayName = "Not Deployed 💀"
+                currentBuild.displayName = "${modelName} Not Deployed 💀"
                 currentBuild.result = "FAILURE"
             }
         }

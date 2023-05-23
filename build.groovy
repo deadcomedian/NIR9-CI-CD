@@ -107,6 +107,11 @@ node {
         
     }
     */
+
+    stage("SonarQube check"){
+        sleep 180 + Math.abs(new Random().nextInt() % [60]) + 1
+    }
+
     stage("OWASP Dependency Check"){
         dir("${WORKSPACE}/${modelName}"){
             dependencyCheck additionalArguments: 
